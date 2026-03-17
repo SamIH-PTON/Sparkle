@@ -18,4 +18,10 @@ SPU_OBJC_DIRECT_MEMBERS @interface SPUDownloader : NSObject <SPUDownloaderProtoc
 // Invoke cleanup when done with this instance
 - (instancetype)initWithDelegate:(id <SPUDownloaderDelegate>)delegate;
 
+// The session configuration used for all in-process downloads. Set this to
+// customize the underlying NSURLSession (e.g. for mutual TLS). Defaults to nil,
+// in which case +[NSURLSessionConfiguration defaultSessionConfiguration] is used.
+// Has no effect when the XPC downloader service is active.
+@property (class, nullable, copy) NSURLSessionConfiguration *sharedSessionConfiguration;
+
 @end

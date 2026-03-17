@@ -28,6 +28,7 @@
 #import "SUErrors.h"
 #import "SPUXPCServiceInfo.h"
 #import "SPUUpdaterCycle.h"
+#import "SPUDownloader.h"
 #import "SPUUpdaterTimer.h"
 #import "SPUResumableUpdate.h"
 #import "SUSignatures.h"
@@ -84,6 +85,16 @@ NSString *const SUUpdaterAppcastNotificationKey = @"SUUpdaterAppCastNotification
 @synthesize httpHeaders = _httpHeaders;
 @synthesize sessionInProgress = _sessionInProgress;
 @synthesize canCheckForUpdates = _canCheckForUpdates;
+
+- (NSURLSessionConfiguration * _Nullable)downloadSessionConfiguration
+{
+    return SPUDownloader.sharedSessionConfiguration;
+}
+
+- (void)setDownloadSessionConfiguration:(NSURLSessionConfiguration * _Nullable)sessionConfiguration
+{
+    SPUDownloader.sharedSessionConfiguration = sessionConfiguration;
+}
 
 #if DEBUG
 + (void)initialize

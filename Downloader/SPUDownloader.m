@@ -24,7 +24,11 @@ typedef NS_ENUM(NSUInteger, SPUDownloadMode)
 
 static NSString *SUDownloadingReason = @"Downloading update related file";
 
+static NSURLSessionConfiguration *sSharedSessionConfiguration = nil;
+
 @interface SPUDownloader () <NSURLSessionDownloadDelegate>
+// Coalesces sharedSessionConfiguration to a non-null default; for internal use only.
+@property (class, readonly) NSURLSessionConfiguration *effectiveSessionConfiguration;
 @end
 
 @implementation SPUDownloader
@@ -44,6 +48,21 @@ static NSString *SUDownloadingReason = @"Downloading update related file";
     BOOL _receivedExpectedBytes;
 }
 
++ (NSURLSessionConfiguration * _Nullable)sharedSessionConfiguration
+{
+    return sSharedSessionConfiguration;
+}
+
++ (void)setSharedSessionConfiguration:(NSURLSessionConfiguration * _Nullable)sessionConfiguration
+{
+    sSharedSessionConfiguration = [sessionConfiguration copy];
+}
+
++ (NSURLSessionConfiguration *)effectiveSessionConfiguration
+{
+    return sSharedSessionConfiguration ?: [NSURLSessionConfiguration defaultSessionConfiguration];
+}
+
 - (instancetype)initWithDelegate:(id <SPUDownloaderDelegate>)delegate
 {
     self = [super init];
@@ -56,7 +75,7 @@ static NSString *SUDownloadingReason = @"Downloading update related file";
 - (void)startDownloadWithRequest:(NSURLRequest *)request SPU_OBJC_DIRECT
 {
     _downloadSession = [NSURLSession
-        sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
+        sessionWithConfiguration:SPUDownloader.effectiveSessionConfiguration
         delegate:self
         delegateQueue:[NSOperationQueue mainQueue]];
     _download = [_downloadSession downloadTaskWithRequest:request];
