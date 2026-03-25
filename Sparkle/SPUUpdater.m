@@ -96,6 +96,16 @@ NSString *const SUUpdaterAppcastNotificationKey = @"SUUpdaterAppCastNotification
     SPUDownloader.sharedSessionConfiguration = sessionConfiguration;
 }
 
+- (NSURLCredential * _Nullable)clientCredential
+{
+    return SPUDownloader.sharedClientCredential;
+}
+
+- (void)setClientCredential:(NSURLCredential * _Nullable)credential
+{
+    SPUDownloader.sharedClientCredential = credential;
+}
+
 #if DEBUG
 + (void)initialize
 {

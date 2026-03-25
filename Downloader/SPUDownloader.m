@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, SPUDownloadMode)
 static NSString *SUDownloadingReason = @"Downloading update related file";
 
 static NSURLSessionConfiguration *sSharedSessionConfiguration = nil;
+static NSURLCredential *sSharedClientCredential = nil;
 
 @interface SPUDownloader () <NSURLSessionDownloadDelegate>
 // Coalesces sharedSessionConfiguration to a non-null default; for internal use only.
@@ -56,6 +57,16 @@ static NSURLSessionConfiguration *sSharedSessionConfiguration = nil;
 + (void)setSharedSessionConfiguration:(NSURLSessionConfiguration * _Nullable)sessionConfiguration
 {
     sSharedSessionConfiguration = [sessionConfiguration copy];
+}
+
++ (NSURLCredential * _Nullable)sharedClientCredential
+{
+    return sSharedClientCredential;
+}
+
++ (void)setSharedClientCredential:(NSURLCredential * _Nullable)credential
+{
+    sSharedClientCredential = credential;
 }
 
 + (NSURLSessionConfiguration *)effectiveSessionConfiguration
@@ -169,6 +180,16 @@ static NSURLSessionConfiguration *sSharedSessionConfiguration = nil;
         
         completionHandler();
     });
+}
+
+- (void)URLSession:(NSURLSession *)__unused session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
+{
+    NSURLCredential *credential = sSharedClientCredential;
+    if (credential != nil && [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+        completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+    } else {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    }
 }
 
 - (void)URLSession:(NSURLSession *)__unused session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
