@@ -319,23 +319,6 @@ SU_EXPORT @interface SPUUpdater : NSObject
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, NSString *> *httpHeaders;
 
 /**
- A custom URL session configuration used for all Sparkle network requests (appcast fetches,
- release notes downloads, and update archive downloads).
-
- Useful for adjusting timeouts, proxy behavior, or TLS settings. For mutual TLS specifically,
- prefer clientCredential instead — it is more reliable than pre-loading credentials into
- URLCredentialStorage.
-
- This property only applies when the Sparkle downloader runs in-process (i.e. the XPC
- downloader service is disabled or not embedded). When the XPC service is active the
- session configuration is created inside the separate Downloader process and this property
- has no effect.
-
- If nil (the default), Sparkle uses +[NSURLSessionConfiguration defaultSessionConfiguration].
- */
-@property (nonatomic, copy, nullable) NSURLSessionConfiguration *downloadSessionConfiguration;
-
-/**
  A client credential to present for mutual TLS authentication on all Sparkle network requests.
 
  When set, Sparkle responds to client certificate challenges by presenting this credential

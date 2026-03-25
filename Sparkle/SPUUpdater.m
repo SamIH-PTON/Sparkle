@@ -86,16 +86,6 @@ NSString *const SUUpdaterAppcastNotificationKey = @"SUUpdaterAppCastNotification
 @synthesize sessionInProgress = _sessionInProgress;
 @synthesize canCheckForUpdates = _canCheckForUpdates;
 
-- (NSURLSessionConfiguration * _Nullable)downloadSessionConfiguration
-{
-    return SPUDownloader.sharedSessionConfiguration;
-}
-
-- (void)setDownloadSessionConfiguration:(NSURLSessionConfiguration * _Nullable)sessionConfiguration
-{
-    SPUDownloader.sharedSessionConfiguration = sessionConfiguration;
-}
-
 - (NSURLCredential * _Nullable)clientCredential
 {
     return SPUDownloader.sharedClientCredential;

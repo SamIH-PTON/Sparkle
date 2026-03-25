@@ -24,12 +24,9 @@ typedef NS_ENUM(NSUInteger, SPUDownloadMode)
 
 static NSString *SUDownloadingReason = @"Downloading update related file";
 
-static NSURLSessionConfiguration *sSharedSessionConfiguration = nil;
 static NSURLCredential *sSharedClientCredential = nil;
 
 @interface SPUDownloader () <NSURLSessionDownloadDelegate>
-// Coalesces sharedSessionConfiguration to a non-null default; for internal use only.
-@property (class, readonly) NSURLSessionConfiguration *effectiveSessionConfiguration;
 @end
 
 @implementation SPUDownloader
@@ -49,16 +46,6 @@ static NSURLCredential *sSharedClientCredential = nil;
     BOOL _receivedExpectedBytes;
 }
 
-+ (NSURLSessionConfiguration * _Nullable)sharedSessionConfiguration
-{
-    return sSharedSessionConfiguration;
-}
-
-+ (void)setSharedSessionConfiguration:(NSURLSessionConfiguration * _Nullable)sessionConfiguration
-{
-    sSharedSessionConfiguration = [sessionConfiguration copy];
-}
-
 + (NSURLCredential * _Nullable)sharedClientCredential
 {
     return sSharedClientCredential;
@@ -67,11 +54,6 @@ static NSURLCredential *sSharedClientCredential = nil;
 + (void)setSharedClientCredential:(NSURLCredential * _Nullable)credential
 {
     sSharedClientCredential = credential;
-}
-
-+ (NSURLSessionConfiguration *)effectiveSessionConfiguration
-{
-    return sSharedSessionConfiguration ?: [NSURLSessionConfiguration defaultSessionConfiguration];
 }
 
 - (instancetype)initWithDelegate:(id <SPUDownloaderDelegate>)delegate
@@ -86,7 +68,7 @@ static NSURLCredential *sSharedClientCredential = nil;
 - (void)startDownloadWithRequest:(NSURLRequest *)request SPU_OBJC_DIRECT
 {
     _downloadSession = [NSURLSession
-        sessionWithConfiguration:SPUDownloader.effectiveSessionConfiguration
+        sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
         delegate:self
         delegateQueue:[NSOperationQueue mainQueue]];
     _download = [_downloadSession downloadTaskWithRequest:request];
